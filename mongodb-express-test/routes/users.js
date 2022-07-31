@@ -1,4 +1,5 @@
 var express = require('express');
+const UserController = require('../controllers/UserController');
 const UserModel = require('../model/UserModel');
 var router = express.Router();
 
@@ -6,21 +7,7 @@ var router = express.Router();
 router.get('/', function (req, res, next) {
   res.send('respond with a resource');
 });
-router.post('/user/add', (req, res, next) => {
-  console.log(req.body);
-  const { username, password, age } = req.body
-  // 插入数据库
-  UserModel.create({
-    username,
-    password,
-    age
-  }).then((data) => {
-    console.log(data);
-  })
-  res.send({
-    ok: 1
-  })
-})
+router.post('/user/add', UserController.addUser)
 router.post('/user/update/:id', (req, res, next) => {
   console.log(req.body, req.params)
   const { username } = req.body
