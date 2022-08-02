@@ -8,7 +8,12 @@ router.get('/', function (req, res, next) {
 });
 router.post('/user/add', UserController.addUser)
 router.post('/user/update/:id', UserController.updateUser)
-router.post('/login',UserController.login)
+router.post('/login', UserController.login)
+router.get('/logout', (req,res) => {
+  req.session.destroy(() => {
+    res.send({ ok: 1 })
+  })
+})
 
 module.exports = router;
 

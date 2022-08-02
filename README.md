@@ -506,6 +506,87 @@ model(services)		// 处理数据
 
 #### 1. cookie & session
 
+> HTTP本身是无状态的，所以需要借助cookie进行状态存储。
+>
+> cookie很容易被伪造，结合session是最完美的解决方案。
+>
+> cookie存在客户端，session存在服务端，开发中经常组合起来使用：cookie存储session的唯一ID值，后端验证session ID,找到cookie
+
+```js
+const express = require('express')
+const app = express()
+const session = require('express-session')
+
+app.use(session({
+  name:'hansumsystem',
+  secret:'asdhadhaksndjas',
+  cookie:{
+    maxAge:1000*60*60,
+    secure:false
+  },
+  resave:true,
+  saveUninitialized:true
+}))
+
+// 在send之前设置session
+req.session.user = data[0]
+
+
+// 设置中间件
+app.use((req,res,next)=>{
+    // 排除login相关的路由
+    if(req.url.includes('login')) {
+        next()
+        return
+    }
+    if(req.session.user) {
+        next()
+    } else {
+        res.redirect('/login')
+    }
+})
+```
+
+退出登录：
+
+```js
+req.session.destroy()
+// 服务器重启 session丢失 bug ： 安装connect-mongo模块
+
+// session 过期时间不更新 bug
+
+```
+
+
+
 #### 2. JWT
+
+> cookie容易被劫持，session占内存
+>
+> localStorage + 加密 = token ：Header + 数据 + 密钥（后端）=> 签名
+
+```js
+// utils/JWT.js
+const jwt = require('jsonwebtoken')
+
+const secret = 'hansum'
+
+const JWT = {
+  generator() {
+    return jwt.sign(value, secret, expires)
+  },
+  verify(token) {
+    try {
+      return jwt.verify(token, secret)
+    } catch (error) {
+
+    }
+  }
+}
+
+module.exports = JWT
+```
+
+
 
  

@@ -1,4 +1,5 @@
 const UserService = require("../services/UserService");
+const JWT = require("../utils/JWT");
 
 const UserController = {
     addUser: async (req, res, next) => {
@@ -22,14 +23,24 @@ const UserController = {
     login: async (req, res, next) => {
         const { username, password } = req.body
         const data = await UserService.login(username, password)
-        console.log(data);
-        if(data.length === 0) {
+        console.log(data[0]);
+        if (data.length === 0) {
             res.send({
-                ok:0
+                ok: 0
             })
         } else {
+            // 设置 session
+            req.session.user = data[0]
+            // 设置token
+            const {_id, username} = data[0]
+            const token = JWT.generator({
+                _id,
+                username
+            },'1h')
+            // token 返回在header中
+            res.header('Authorization', token)
             res.send({
-                ok:1
+                ok: 1
             })
         }
     }

@@ -5,7 +5,9 @@
     <link rel='stylesheet' href='/stylesheets/style.css' />
   </head>
   <body>
-    <h1>mongodb的CRUD演示</h1>
+    <h1>mongodb的CRUD演示
+      <button id="exit">退出登录</button>
+    </h1>
     <div>
       <div>用户名 <input type="text" id="username"> </div>
       <div>密码 <input type="password" id="password"> </div>
@@ -47,6 +49,13 @@
           }
         }).then(res=>res.json()).then(res=>{
           console.log(res)
+        })
+      }
+      exit.onclick = () => {
+        fetch('/api/logout').then(res=>res.json()).then(res=>{
+          if(res.ok === 1) {
+            location.href = '/login'
+          }
         })
       }
     </script>
