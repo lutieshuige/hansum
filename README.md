@@ -1,20 +1,10 @@
+[TOC]
+
 ## nodeJS
 
-- 认识`nodeJS`
-- 开发环境搭建
-- 模块规范
-- `npm`使用
-- `nvm`使用
-- `yarn`使用
-- `ES`模块化写法
-- 内置模块`http`
-- 内置模块`url`
-- 内置模块`fs`
-- 内置模块`zlib`
-- 路由
-- `express`
+### [基础]
 
-### 认识`nodeJS`
+#### 认识`nodeJS`
 
 `nodeJS`是一个基于chrome V8 引擎的 JavaScript 运行环境。
 
@@ -37,11 +27,11 @@
 2. 服务器渲染页面
 3. 后端的Web服务，比如跨域、服务器端的请求
 
-### 开发环境搭建
+#### 开发环境搭建
 
 安装`node`
 
-### 模块化规范
+#### 模块化规范
 
 `nodeJS`起初遵循`common JS`规范，后面也支持`ES`规范
 
@@ -50,25 +40,25 @@
 1. 请求`require`
 2. 暴露`module.exports`，也等同于`exports`
 
-### npm使用
+#### npm使用
 
 1. 初始化项目：`npm init -y`
 
 2. 安装包：`npm i xxx` (`npm install xxx --save`的简写形式)
 
-### nvm使用
+#### nvm使用
 
 `node`的版本管理工具
 
 1. 安装最新版：`nvm use --lts`
 
-### ES模块化写法
+#### ES模块化写法
 
 `package.json`中添加`"type":"module"`
 
-### 内置模块-http
+#### 内置模块-http
 
-#### 创建服务器
+##### 创建服务器
 
 ```js
 const http = requrie('http')
@@ -80,15 +70,15 @@ http.createServer((req,res)=>{
 
 ```
 
-#### jsonp
+##### jsonp
 
 原理：通过后端拿到前端传递过来的`cb`参数，以`cb(data)`的形式返回给客户端去执行。
 
-#### cors
+##### cors
 
 原理：通过给`ACAO`设置为`*`，来放开浏览器跨域的限制。
 
-### 内置模块-fs
+#### 内置模块-fs
 
 ```js
 const fs = require("fs")
@@ -103,7 +93,7 @@ const fs = require("fs")
 
 
 
-### express
+### [应用框架——express]
 
 基本使用：
 
@@ -209,9 +199,13 @@ app.use(express.static('public'))
 npm i -g express-generator
 ```
 
-## 数据库
+### [数据库]
 
-### MongoDB
+#### MySQL
+
+
+
+#### MongoDB
 
 > 非关系型数据库
 
@@ -372,7 +366,7 @@ demo> db.users.findOne({}) # 第一条数据
 demo> db.users.findOne({}).count() # 计数
 ```
 
-### express中操作
+#### express中操作
 
 搭建后台环境：
 
@@ -488,11 +482,11 @@ const UserModel = mongoose.model('user',new Schema(userType))
 module.exports = UserModel
 ```
 
-### 接口规范
+#### 接口规范
 
 `RESTful`风格：`get`、`post`、`put`、`delete`
 
-### 业务分层
+#### 业务分层
 
 `MVC`：
 
@@ -502,9 +496,9 @@ controllers // 业务逻辑(获取&返回数据)
 model(services)		// 处理数据
 ```
 
-### 登录校验
+#### 登录校验
 
-#### 1. cookie & session
+##### 1. cookie & session
 
 > HTTP本身是无状态的，所以需要借助cookie进行状态存储。
 >
@@ -559,7 +553,7 @@ req.session.destroy()
 
 
 
-#### 2. JWT
+##### 2. JWT
 
 > cookie容易被劫持，session占内存
 >
@@ -586,6 +580,98 @@ const JWT = {
 
 module.exports = JWT
 ```
+
+### [应用框架——Koa]
+
+express vs Koa
+
+1. 实例构造方式不同，Koa 是通过 `new Koa` 生成 app
+2. Koa中间件 参数 ： `ctx`对象集成 `req,res`，即：ctx.req ctx.res，还可以省略 req, res 的写法
+3. Koa 不提供路由中间件，单独分离出来
+4. 异步流程：express 采用回调，Koa v1采用generator ，v2采用 async/await
+
+#### 路由：
+
+```js
+// user.js
+const Router = require('koa-router')
+const router = new Router()
+router.get('/',(ctx,next)=>{
+    ctx.body = ['111','222','333']
+})
+module.exports = router
+// routes/index.js
+const Router = require('koa-router')
+const router = new Router()
+const userRouter = require('./user.js')
+// 统一加前缀
+router.prefix('/api')
+router.use('/user',userRouter.routes(),userRouter.allowedMethods)
+module.exports = router
+// app.js
+const router = require('./routes')
+app.use(router.routes(),router.allowedMethods())
+```
+
+#### 静态资源
+
+```js
+const static = require('koa-static')
+const path = require('path')
+app.use(static(
+	path.join(__dirname,'public')
+))
+```
+
+#### 请求对象
+
+```js
+// ctx.query ctx.querystring 
+// post : ctx.request.body
+const bodyParser = require('koa-bodyparser')
+app.use(bodyParser())
+```
+
+#### ejs模板
+
+```js
+// koa-views ejs
+app.use(views(path.join(__dirname,'views'),{extension:"ejs"}))
+
+// routes/home.js
+await ctx.render("home") // 自动找views/home.ejs
+```
+
+#### 登录校验
+
+##### 1. cookie & session
+
+- ctx.cookies.get(name, [options])
+- ctx.cookies.set(name, value, [options])
+- koa-session-minimal 中间件
+
+##### 2. JWT
+
+### [项目]
+
+#### 准备工作
+
+1. 前端
+   - 前端工程化环境（webpack）
+   - CSS 预处理工具（sass）
+   - JS库： Jquery
+   - 单页面应用（SPA）：路由
+   - JS模块化： ES、CommonJS
+   - UI 组建库：Bootstrap
+
+2. 后端
+   - NodeJS
+   - Express / Koa
+   - MongoDB
+
+
+
+
 
 
 
