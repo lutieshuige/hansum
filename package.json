@@ -1,9 +1,0 @@
-{
-  "dependencies": {
-    "connect-mongo": "^4.6.0",
-    "express-session": "^1.17.3",
-    "jsonwebtoken": "^8.5.1",
-    "koa": "^2.13.4",
-    "koa-router": "^12.0.0"
-  }
-}
