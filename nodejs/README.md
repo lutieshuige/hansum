@@ -525,8 +525,10 @@ await ctx.render("home") // 自动找views/home.ejs
    - 单页面应用（SPA）：路由
    - JS模块化： ES、CommonJS
    - UI 组建库：Bootstrap
-
 2. 后端
    - NodeJS
    - Express / Koa
    - MongoDB
+
+## 6.前端库 vue
+
