@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>jsonp实现</title>
+</head>
+<body>
+    <script>
+       var oscript = document.createElement('script')
+       oscript.src = 'http://localhost:3000/api/jsonp?callback=cb'
+       document.body.appendChild(oscript)
+       function cb(data) {
+        console.log(data);
+       }
+    </script>
+</body>
+</html>
