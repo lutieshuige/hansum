@@ -725,6 +725,17 @@ paru apipost
 
 > 由于linux自带git,所以不需要安装
 
+#### 新方法
+
+```bash
+sudo pacman -S github-cli
+
+gh auth login
+
+```
+
+#### 旧方法
+
 1. 配置用户名、邮箱
 
 ```
