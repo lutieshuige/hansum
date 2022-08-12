@@ -1,16 +1,14 @@
 # 新手上路
 
-## 安装前的准备
+## 准备
 
-由于当前 UEFI 已普及十余年，安装将全部以 UEFI+GPT 的形式进行，传统 BIOS 方式不再赘述。
+本文以 UEFI+GPT 的形式进行安装
 
-### 0.终端编辑器 vim 的使用
+### 1. vim 的使用
 
 ```bash
 vim 1.txt   #创建并编辑名为1.txt的文件
 ```
-
-你可以看到进入了一个空的界面。此时你处在 vim 的`命令模式`。在`命令模式`下，可以用一些快捷指令来对文本进行操作。 现在我们输入`a`进入 vim 的`编辑模式`，此时输入任意文本，即可进行编辑。 在输入完成后，我们按下 Esc 键，即可从`编辑模式`退出到`命令模式`。此时输入`:wq`即可保存并退出 vim。 下面介绍一些在命令模式下常用的命令
 
 ```bash
 :wq     # 保存退出
@@ -23,27 +21,19 @@ shift+g  # 转到文本最后一行
 ?xxx   # 反向搜索
 ```
 
-拓展链接：需要完整教程的读者可以在终端中输入命令`vimtutor`来学习完整的 vim 教程。
-
-### 1.确保网络环境
-
-如果你可以使用路由器分接出来的网线，以 dhcp 的方式直接上网，那么不用准备什么。如果你的环境只能使用无线网络安装，需要事先把自己所用的 wifi 名称改成自己能记住的英文名称。因为**安装时无法显示和输入中文名的 wifi**，你会看到一堆不知道是什么的方块，并且在安装过程中你将没有办法输入中文的无线名称进行连接。虽然通过一些繁琐的步骤可以解决终端中文的问题，但是显然这么做在安装 Arch Linux 时毫无必要。
-
-其次，有些笔记本电脑上存在无线网卡的硬件开关或者键盘控制，开机后安装前需要**确保你的无线网卡硬件开关处于打开状态**。
+完整指南可以在终端中输入命令`vimtutor`来查看。
 
 ### 2.刻录启动优盘
 
-准备一个 2G 以上的优盘，刻录一个安装启动盘。安装镜像 iso 在[下载页面](https://archlinux.org/download/)下载，你需要选择通过磁力链接或 torrent 下载，下载完成后，还需要在 archlinux 下载页面下载`PGP signature`签名文件(不要从镜像源下载签名文件)，将签名文件和 iso 镜像置于同一文件夹，随后进行对镜像的签名校验，以保证下载的镜像是完整，无错误的，未被篡改的。若你使用 Linux,执行以下命令，确保输出完好的签名。具体镜像名根据名字自行修改。如果你使用其他系统，请自行搜索验证签名的方式。
+准备一个 4G 以上的优盘，刻录一个安装启动盘。安装镜像 iso 在[下载页面](https://archlinux.org/download/)下载，还需要在 archlinux 下载页面下载`PGP signature`签名文件(不要从镜像源下载签名文件)，将签名文件和 iso 镜像置于同一文件夹，随后进行对镜像的签名校验，以保证下载的镜像是完整，无错误的，未被篡改的。若你使用 Linux,执行以下命令，确保输出完好的签名。具体镜像名根据名字自行修改。如果你使用其他系统，请自行搜索验证签名的方式。
 
 ```bash
 gpg --keyserver-options auto-key-retrieve --verify archlinux-202x.0x.01-x86_64.iso.sig
 ```
 
-注意，这里的签名校验**非常重要**，这可以保证你的安装镜像是未被篡改的，同时可以保证你在使用安装盘安装系统时，用正确的公钥校验安装包。
-
 ------
 
-Windows 下推荐使用[ventoy](https://www.ventoy.net/cn/doc_start.html)或者[Rufus](https://rufus.ie/)或者[etcher](https://github.com/balena-io/etcher)进行优盘刻录。三者皆为自由软件。具体操作请自行查阅，都非常简单。
+Windows 下推荐使用[Rufus](https://rufus.ie/)https://github.com/balena-io/etcher)进行优盘刻录。具体操作请自行查阅，都非常简单。
 
 Linux 下可以直接用 dd 命令进行刻录。注意 of 的参数为 sdx,不是 sdx1 sdx2 等。
 
@@ -79,33 +69,9 @@ sudo dd bs=4M if=/path/to/archlinux.iso of=/dev/sdx status=progress oflag=sync
 
 本节从安装最基础的无图形化 ArchLinux 系统开始。[官方安装指南](https://wiki.archlinux.org/index.php/Installation_guide)
 
-### 0.禁用 reflector
+### 1.连接网络
 
-reflector 会为你选择速度合适的镜像源，但其结果并不准确，同时会清空配置文件中的内容，对于新人来讲并不适用，我们首先对其进行禁用。
-
-```bash
-systemctl stop reflector.service
-```
-
-### 1.再次确保是否为 UEFI 模式
-
-在一系列的信息刷屏后，可以看到已经以 root 登陆安装系统了，此时可以执行的命令：
-
-```bash
-ls /sys/firmware/efi/efivars
-```
-
-若输出了一堆东西，即 efi 变量，则说明已在 UEFI 模式。否则请确认你的启动方式是否为 UEFI。
-
-### 2.连接网络
-
-一般来说，你连接的网络几乎均可以通过 DHCP 的方式来进行 IP 地址和 DNS 的相关设置，你无需进行额外操作。在没有合适网络的情况下，使用手机的移动热点也是很方便的选择。如果你的网络环境需要配置静态 IP 和 DNS,请自行参考 Arch Wiki。
-
-对于有线连接来说，直接插入网线即可。
-
-对于无线连接，则需进行如下操作进行网络连接。
-
-无线连接使用 iwctl 命令进行，按照如下步骤进行网络连接：
+无线连接：
 
 ```bash
 iwctl                           #执行iwctl命令，进入交互式命令行
@@ -119,7 +85,7 @@ exit                            #成功后exit退出
 可以等待几秒等网络建立链接后再进行下面测试网络的操作。
 
 ```bash
-ping www.gnu.org
+ping www.baidu.com
 ```
 
 ------
@@ -137,18 +103,19 @@ ip link set wlan0 up #比如无线网卡看到叫 wlan0
 rfkill unblock wifi
 ```
 
-### 3.更新系统时钟
+### 2.更新系统时钟
 
 ```bash
 timedatectl set-ntp true    #将系统时间与网络时间进行同步
 timedatectl status          #检查服务状态
 ```
 
-### 4.分区
+### 3.分区
 
 这里总共设置三个分区，是一个**我们认为**较为通用的方案。此步骤会清除磁盘中全部内容，请事先确认。
 
 - EFI 分区[[2\]](https://wiki.archlinux.org/title/EFI_system_partition#Mount_the_partition)： `/efi` 800M
+- Swap分区：8G
 - 根目录： `/` 100G
 - 用户主目录： `/home` 剩余全部
 
@@ -173,10 +140,6 @@ fdisk -l #分区结束后， 复查磁盘情况
 
 ### 5.格式化
 
-建立好分区后，需要对分区用合适的文件系统进行格式化。这里用`mkfs.ext4`命令格式化根分区与 home 分区，用`mkfs.vfat`命令格式化 EFI 分区。如下命令中的 sdax 中，x 代表分区的序号。格式化命令要与上一步分区中生成的分区名字对应才可以。
-
-磁盘若事先有数据，会提示你: 'proceed any way?' 按 y 回车继续即可。
-
 ```bash
 mkfs.ext4  /dev/sdax            #格式化根目录和home目录的两个分区
 mkfs.vfat  /dev/sdax            #格式化efi分区
@@ -196,8 +159,6 @@ mount /dev/sdax /mnt/home
 
 ### 7.镜像源的选择
 
-使用如下命令编辑镜像列表：
-
 ```bash
 vim /etc/pacman.d/mirrorlist
 ```
@@ -210,10 +171,6 @@ Server = https://mirrors.tuna.tsinghua.edu.cn/archlinux/$repo/os/$arch
 ```
 
 如果其速度不佳，可以手动指定其他镜像源。完整的镜像源列表可参考官方[镜像源生成器](https://archlinux.org/mirrorlist/)。
-
-> 这里使用中国境内的镜像源以提高访问速度。然而这存在问题，镜像源(如 arch linux 清华镜像源)以及第三方源(如 archlinux-cn)可以知道你的 ip 是什么，什么时候更新了系统，什么时候检查了系统，什么时候更新了什么软件，你安装的软件列表是什么。在威权国家的镜像源维护者完全有可能根据威权当局的要求提供这些数据，很多维护者在网络上几乎是实名上网的，他们没有任何抵抗能力，进一步的，威权国家可以根据这些元数据与你产生的其他元数据进行比对，从而对你进行进一步的定位与辨识。简单举一个例子，要求维护者提供或监视安装了 v2ray/qv2ray 等软件包的使用者的 ip,以及安装时间，以及其全部软件列表。
-
-> 如果你在安装 arch linux 时的网络已经处于代理模式下，可以选择一个与你代理位置较近的，非威权国家的镜像源来使用。如果你在安装 arch linux 时的网络环境没有代理，那么在安装结束后，需要尽快更换一个非威权国家的镜像源来使用。如下列举一些较为优质的国际源。
 
 ```bash
 Server = https://mirror.archlinux.tw/ArchLinux/$repo/os/$arch   #东亚地区:中华民国
@@ -394,42 +351,11 @@ iwctl               #和之前的方式一样，连接无线网络
 
 ## 魔法学院
 
-### 1.节点的准备
-
-简单来讲节点是形如如下的神秘链接，不论你以何种方式获得的这些连接，如果你已经拥有，可以直接阅读下面一小节。
-
-```txt
-ss://xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-vmess://xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-```
-
-如果你没有这些连接，可以自行部署或者购买机场的订阅服务。
-
-如果自行部署，你则需要自行购买处于自由互联网的服务器并进行节点搭建，这不在本文讨论范围内，仅提供三篇 GFW Report 的高质量文章作为参考。但是这些文章已被 GFW 屏蔽。我们之后会提供一些办法解决这个问题。
-
-- [如何部署一台抗封锁的 Shadowsocks-libev 服务器](https://gfw.report/blog/ss_tutorial/zh/)
-- [防御 GFW 主动探测的实用指南](https://gfw.report/blog/ss_advise/zh/)
-- [Shadowsocks 是如何被检测和封锁的](https://gfw.report/talks/imc20/zh/)
-
-对于服务器的购买，我们提供一个网址以供参考: https://bitcoin-vps.com/ 。bitcoin-vps 提供了非常详尽、且及时更新的服务器供应商列表，这些服务器供应商均在不同程度上支持使用加密货币进行支付，如比特币、以太坊等等。使用加密货币支付的好处在于，在正确操作的基础上，你可以完全保障自己的隐私安全。使用支付宝等实名支付手段购买类似的服务是不安全的，我们希望读者们可以认识到加密货币在各方面的价值，并认识到加密货币可以作为你的隐私保护者的存在。
-
-------
-
-如果购买机场的订阅服务，可以参考它们的订阅流程以获取节点。在我们列出一些较为可信的机场服务以供选择，但是**我们不提供任何担保**。需要提醒的是，机场服务属于灰色产业，随时有停止服务的可能，购买建议以月付进行购买以避免过大损失。关于机场审计规则，我们的观点是"我可以不看，但是你不可以封禁"。对于机场审计程度，读者可根据自身实际情况自行评估。
-
-- [GLaDOS](https://www.glados.one/landing/9FMKX-GYLMK-ZYIZW-5U3T0) 在使用邮箱注册后，使用激活码`9FMKX-GYLMK-ZYIZW-5U3T0`激活账号后即可获得 5 天免费试用时长和 10GB 试用流量。 GLaDOS 的优点是可以免费使用，运行时间较长，比较可信。 除此之外，GLaDOS 是少数拥有 Trojan 节点的机场之一。 缺点是速度算不上非常快。 其审核规则，注册账号后可以进入后台面板自行查看。 根据我们的测试，它没有严格按照审计规则进行审计。
-
-------
-
-如果你不想花任何费用，可安装[赛风](https://psiphon3.com/zh/index.html)这类软件。赛风是自由软件。
-
-如果你使用赛风，可以非常方便的发送空邮件到[get@psiphon3.com](mailto:get@psiphon3.com)以获取赛风下载链接。赛风应用目前只支持 Windows\Android\IOS\MacOS 平台。当你在这些平台上能够访问自由互联网时，可以去各个渠道搜索可用的节点和代理资源，如[这个](https://t.me/wtovpn)或者[这个](https://t.me/TG_Mtproxy_1)。注意，使用公共节点需要自行承担可能的风险。
-
-### 2.安装
+### 1.安装
 
 Qv2ray 和 V2rayA 是两款非常优秀的在 Linux 上可用的科学上网通用客户端。你可以把二者都安装，以作备用。其中 V2rayA 是一款浏览器客户端，它可以在服务器等 headless 环境中通过远程在浏览器端访问。Qv2ray 是一款经典的使用 QT 开发的 C/S 架构桌面端软件。
 
-### v2ray
+#### v2ray
 
 v2ray 是使用 Qv2ray 以及 V2rayA 的前提。需要先进行安装。在前面[镜像源的选择]()一节中我们提到，读者应该尽快更换非威权国家的镜像源以保障自身的安全，**在此处安装 v2ray 之前是你更换非威权国家的镜像源的最晚时刻**。使用安全的镜像源安装 v2ray。
 
@@ -444,7 +370,7 @@ wget https://archlinuxstudio.github.io/ArchLinuxTutorial/res/v2ray-4.44.0-1-x86_
 sudo pacman -U v2ray-4.44.0-1-x86_64.pkg.tar.zst
 ```
 
-### [V2rayA](https://archlinuxstudio.github.io/ArchLinuxTutorial/#/rookie/fxckGFW?id=v2raya)
+#### V2rayA
 
 V2rayA 是一个浏览器客户端，使用非常方便。由于作者提供了在墙内的下载地址，可以直接在 AUR 进行安装。安装后需启动服务。V2rayA 更新频繁，开发活跃，并且其安装和使用流程都对新手更加友好，推荐新人使用 V2rayA 进行科学上网。
 
